@@ -4,10 +4,13 @@
     "hubURI": "URL to host",
     "port": "port host",
     "token": "discord token",
+    "enableChatbot": true,
     "chatbotChannel": "channel id to listen in chatbot",
     "owners": ["owner ID", "another owner ID (optional)", "and so on (optional)"],
     "nick": {
         "guildID": "guild id to change nickname on join",
         "nickname": "nickname to change. use {user} to replace with username"
-    }
+    },
+    "enableREE": true,
+    "prefix": "discord bot's prefix"
 }

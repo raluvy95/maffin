@@ -61,18 +61,20 @@ client.on("message", message => {
     if(message.author.id == client.user.id ||
        message.author.bot ||
        message.channel.type == "dm") return;
-    if(message.content.toLowerCase().startsWith("ree")) return message.channel.send("REEEEEEEEEEE")
+    if(message.content.toLowerCase().startsWith("ree")
+       && config.enableREE) return message.channel.send("REEEEEEEEEEE")
     if(message.channel.id == config.chatbotChannel) return;
-    if(message.content.startsWith("doas")) return message.channel.send("Yo! You don't like using sudo?")
-    if (!message.content.startsWith("sudo")) return;
-    if(message.content.startsWith("sudo rm -rf")) {
-        return message.channel.send(`I'm going to remove the folder \`${message.content.slice(12)}\``).then(r => {
-            setTimeout(() => r.edit(`\`${message.content.slice(12)}\` has been removed!`), 3000)
-        })
-    } else if(message.content.startsWith("sudo shutdown")) {
-        return message.channel.send("Shutting down...")
+    if (!message.content.startsWith(config.prefix)) return;
+    if(config.enableSudo) {
+        if(message.content.startsWith("sudo rm -rf")) {
+            return message.channel.send(`I'm going to remove the folder \`${message.content.slice(12)}\``).then(r => {
+                setTimeout(() => r.edit(`\`${message.content.slice(12)}\` has been removed!`), 3000)
+            })
+        } else if(message.content.startsWith("sudo shutdown")) {
+            return message.channel.send("Shutting down...")
+        }
     }
-    const args = message.content.slice("sudo".length).trim().split(/ +/)
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/)
     const cmdName = args.shift().toLowerCase()
     const command = client.cmds.get(cmdName) || client.cmds.find(m => m.aliases && m.aliases.includes(cmdName))
     if (!command) return;
@@ -109,6 +111,7 @@ client.on("message", message => {
 
 // this is chatbot
 client.on("message", message => {
+    if(!config.enableChatbot) return;
     if(message.author.id == client.user.id || message.author.bot) return;
     if(message.channel.id != config.chatbotChannel) return;
     if(message.content.startsWith("!")) return;
