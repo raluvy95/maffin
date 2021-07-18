@@ -19,12 +19,13 @@ module.exports = {
       const output = clean(evaled)
       console.log(output.length)
       if(output.length > 1990) {
-          await message.channel.send(output.slice(0, 1990), {code: "js"})
+          const ogMsg = await message.channel.send(output.slice(0, 1990), {code: "js"})
           let ttt = (output.length - 1990) / 1990
           message.channel.send(`Continue? There's more \`${output.length - 1990}\` more characters (${ttt.toFixed(1)} messages will send) and might be flooding.`).then(async msg => {
               await msg.react("✅")
               await msg.react("📜")
               await msg.react("❌")
+              await msg.react("🗑️")
               const filter = (r, u) => u.id == message.author.id
               const collect = msg.createReactionCollector(filter, {time: 15000})
               collect.on('collect', async rr => {
@@ -42,6 +43,10 @@ module.exports = {
                       }
                       case '❌':
                           await msg.delete()
+                          break;
+                      case '🗑️':
+                          await msg.delete()
+                          await ogMsg.delete()
                           break;
                       case '📜': {
                           let time = 2;
@@ -61,10 +66,32 @@ module.exports = {
               })
           })
       } else {
-          return await message.channel.send(output, { code: "js" });
+          const msg = await message.channel.send(output, { code: "js" })
+          await msg.react('🗑️')
+          const fitler = (r, u) => u.id == message.author.id
+          const collect = msg.createReactionCollector(fitler, {time: 15000})
+          collect.on("collect", async rr => {
+             if(rr.emoji.name == "🗑️") {
+                 await msg.delete()
+             }
+          })
+          collect.on("end", async () => {
+              msg.reactions.removeAll()
+          })
       }
     } catch (err) {
-      return message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+      const msg = await message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
+      await msg.react('🗑️')
+      const fitler = (r, u) => u.id == message.author.id == u.id
+      const collect = msg.createReactionCollector(fitler, {time: 15000})
+      collect.on("collect", async rr => {
+          if(rr.emoji.name == '🗑') {
+              await msg.delete()
+          }
+      })
+      collect.on("end", () => {
+          msg.reactions.removeAll()
+      })
     }
   }
 }
