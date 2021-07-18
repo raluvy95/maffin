@@ -1,12 +1,17 @@
 const Discord = require("discord.js");
 require("discord-reply");
 const intents = new Discord.Intents()
-const client = new Discord.Client({disableMentions: "all", ws:{ intents: intents.ALL}});
+const client = new Discord.Client({
+    disableMentions: "all",
+    ws: {
+        intents: intents.ALL
+    }
+});
 const fetch = require("node-fetch");
 const fs = require("fs");
-const YoutubeNotifier = require('youtube-notification');
+// const YoutubeNotifier = require('youtube-notification');
 const config = require('./config.json');
-const app = require('express')();
+// const app = require('express')();
 
 client.cooldowns = new Discord.Collection()
 client.cmds = new Discord.Collection()
