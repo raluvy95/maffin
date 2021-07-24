@@ -75,10 +75,12 @@ client.on("guildMemberAdd", member => {
 client.on("message", message => {
     if(message.author.bot ||
        message.channel.type == "dm") return;
-        if (stopIpGrabbers && ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
+	if (stopIpGrabbers) {
+        if (ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
             message.delete();
             return message.reply("Don't send IP grabber links or you will be banned!");
-        }
+    	}
+	}
     if(message.content.toLowerCase().startsWith("ree")
        && config.enableREE) return message.channel.send("REEEEEEEEEEE")
     if(message.channel.id == config.chatbotChannel) return;
