@@ -18,6 +18,16 @@ client.cmds = new Discord.Collection()
 client.Embed = Discord.MessageEmbed
 client.f = fetch;
 
+let ipGrabberDomainsArr;
+let stopIpGrabbers = false;
+if (config.ipGrabberDomainsGistId != null) {
+    stopIpGrabbers = true;
+    fetch(`https://api.github.com/gists/${config.ipGrabberDomainsGistId}`)
+        .then(r => r.json())
+        .then(json => ipGrabberDomainsArr = JSON.parse(json.files.ip_grabber_domains.content))
+        .catch(error => console.log(`Failed to get IP grabber domains array gist: ${error}`), stopIpGrabbers = false);
+}
+
 const modules = fs.readdirSync("./cmds")
     .filter(m => !m.startsWith("_"))
 for (const m of modules) {
@@ -63,9 +73,12 @@ client.on("guildMemberAdd", member => {
 
 // this is command
 client.on("message", message => {
-    if(message.author.id == client.user.id ||
-       message.author.bot ||
+    if(message.author.bot ||
        message.channel.type == "dm") return;
+        if (stopIpGrabbers && ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
+            message.delete();
+            return message.reply("Don't send IP grabber links or you will be banned!");
+        }
     if(message.content.toLowerCase().startsWith("ree")
        && config.enableREE) return message.channel.send("REEEEEEEEEEE")
     if(message.channel.id == config.chatbotChannel) return;
