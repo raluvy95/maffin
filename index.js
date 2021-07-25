@@ -9,9 +9,20 @@ const client = new Discord.Client({
 });
 const fetch = require("node-fetch");
 const fs = require("fs");
-// const YoutubeNotifier = require('youtube-notification');
+let Parser = require("rss-parser");
+let parser = new Parser();
 const config = require('./config.json');
-// const app = require('express')();
+
+let previousVidId;
+fs.open("previousVidID.json", 'r', function (err, fd) {
+    if (err) {
+        fs.writeFile("previousVidId.json", "[]", function (err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    };
+});
 
 client.cooldowns = new Discord.Collection()
 client.cmds = new Discord.Collection()
@@ -48,7 +59,8 @@ for (const m of modules) {
 
 client.on("ready", () => {
     console.log("Ready!");
-    client.user.setActivity("you can talk with me in #chatbot")
+    client.user.setActivity("you can talk with me in #chatbot");
+    previousVidId = require('./previousVidId.json');
 });
 
 client.on("debug", info => {
@@ -167,28 +179,23 @@ client.on("message", message => {
     })
 })
 
-/*
-const notifier = new YoutubeNotifier({
-	hubCallback: config.hubURI,
-	secret: 'can by anything',
-});
+setInterval(function() {
+    parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {
+        if (vidsJson.items[0].id != previousVidId) {
+            let notifMsg = config.ytNotifs.notifMsg;
+            notifMsg = notifMsg.replace("{author}", vidsJson.items[0].author);
+            notifMsg = notifMsg.replace("{url}", vidsJson.items[0].link);
+            try {
+                client.channels.cache.get(config.ytNotifs.notifsChannelId).send(notifMsg);
+            } catch (err) {
+                console.log("Failed to send Youtube notification message!\n" + err);
+            };
+            previousVidId[0] = vidsJson.items[0].id;
+            fs.writeFile('./previousVidId.json', JSON.stringify(previousVidId), 'utf8', function (err) {
+                if (err) return console.log(err);
+            });
+        };
+    });
+}, config.ytNotifs.newVidCheckIntervalInMinutes * 60000);
 
-notifier.on('notified', (data) => {
-	console.log(`A new video has been uploaded: ${data.video.link}`);
-	client.channels.cache
-        .get(config.discordChannel)
-        .send(
-	   `Hey <@&829428576172113961> ! CNB just posted new video!\n${data.video.link}`
-	);
-});
-
-notifier.subscribe(config.youtubeChannels);
-app.use('/', notifier.listener());
-
-const listener = app.listen(config.port, () => {
-	console.log(
-		`Youtube Notifier is listening on port ${listener.address().port}`
-	);
-});
-*/
 client.login(config.token)
