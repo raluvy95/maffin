@@ -12,5 +12,6 @@
         "nickname": "nickname to change. use {user} to replace with username"
     },
     "enableREE": true,
-    "prefix": "discord bot's prefix"
+    "prefix": "discord bot's prefix",
+    "ipGrabberDomainsGistId": ""
 }
