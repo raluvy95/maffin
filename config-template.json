@@ -1,8 +1,4 @@
 {
-    "youtubeChannels": ["your YT channel"],
-    "discordChannel": "channel ID to announce YT",
-    "hubURI": "URL to host",
-    "port": "port host",
     "token": "discord token",
     "enableChatbot": true,
     "chatbotChannel": "channel id to listen in chatbot",
@@ -13,5 +9,11 @@
     },
     "enableREE": true,
     "prefix": "discord bot's prefix",
-    "ipGrabberDomainsGistId": ""
+    "ipGrabberDomainsGistId": "",
+    "ytNotifs": {
+        "ytChannelId": "youtube channel id to send notifications for",
+        "newVidCheckIntervalInMinutes": 1,
+        "notifsChannelId": "id of channel to send notifications to",
+        "notifMsg": "message to send when new vid is uploaded, placeholders {author} and {url} can be used here"
+    }
 }
