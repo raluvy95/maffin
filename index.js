@@ -181,7 +181,7 @@ client.on("message", message => {
 
 setInterval(function() {
     parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {
-        if (vidsJson.items[0].id != previousVidId) {
+        if (vidsJson.items[0].id != previousVidId[0]) {
             let notifMsg = config.ytNotifs.notifMsg;
             notifMsg = notifMsg.replace("{author}", vidsJson.items[0].author);
             notifMsg = notifMsg.replace("{url}", vidsJson.items[0].link);
