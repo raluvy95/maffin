@@ -1,4 +1,4 @@
-<img align="right" width="100" height="100" src="https://raw.githubusercontent.com/raluvy95/catnowbot/master/aaa.png"><br>
+<img align="right" width="100" height="100" src="https://raw.githubusercontent.com/raluvy95/catnowbot/master/icon.png"><br>
 # CatNowBot - codename "Maffin"
 A basic discord bot with necessary features for my server.<br>
 
