@@ -85,17 +85,45 @@ client.on("guildMemberAdd", member => {
 
 // this is command
 client.on("message", message => {
+    function disboardRemover() {
+        setTimeout(() => {
+            const lastMsg = message.channel.messages.cache
+                  .filter(m => m.author.id == "302050872383242240")
+                  .last()
+            if(!lastMsg) return;
+            lastMsg.delete()
+        }, 1000)
+    }
     if(message.author.bot ||
        message.channel.type == "dm") return;
 	if (stopIpGrabbers) {
-        if (ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
-            message.delete();
-            return message.reply("Don't send IP grabber links or you will be banned!");
-    	}
+            if (ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
+                message.delete();
+                return message.reply("Don't send IP grabber links or you will be banned!");
+    	    }
 	}
     if(message.content.toLowerCase().startsWith("ree")
        && config.enableREE) return message.channel.send("REEEEEEEEEEE")
     if(message.channel.id == config.chatbotChannel) return;
+    if(config.enableDISBOARD) {
+        if(message.content.toLowerCase().startsWith("!d bump")) {
+            const embed = new client.Embed()
+            .setImage("https://disboard.org/images/bot-command-image-bump.png")
+            .setTitle("DISBOARD: The Public Server List")
+            .setDescription(`
+<@!${message.author.id}>,
+Bump done 👍
+Check it on DISBOARD: https://disboard.org/
+`)
+            .setURL("https://disboard.org")
+            .setColor(2406327)
+            message.channel.send(embed)
+            disboardRemover()
+        } else if(message.content.toLowerCase().startsWith("!d")) {
+            disboardRemover()
+            message.channel.send("No more disboard")
+        }
+    }
     if (!message.content.startsWith(config.prefix)) return;
     if(config.enableSudo) {
         if(message.content.startsWith("sudo rm -rf")) {

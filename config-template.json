@@ -15,5 +15,7 @@
         "newVidCheckIntervalInMinutes": 1,
         "notifsChannelId": "id of channel to send notifications to",
         "notifMsg": "message to send when new vid is uploaded, placeholders {author} and {url} can be used here"
-    }
+    },
+    "enableDISBOARD": false,
+    "enableSudo": true
 }
