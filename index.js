@@ -186,7 +186,7 @@ setInterval(function() {
             notifMsg = notifMsg.replace("{author}", vidsJson.items[0].author);
             notifMsg = notifMsg.replace("{url}", vidsJson.items[0].link);
             try {
-                client.channels.cache.get(config.ytNotifs.notifsChannelId).send(notifMsg);
+                client.channels.cache.get(config.ytNotifs.notifsChannelId).send(notifMsg, {disableMentions: "none"});
             } catch (err) {
                 console.log("Failed to send Youtube notification message!\n" + err);
             };
