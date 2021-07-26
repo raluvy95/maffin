@@ -2,7 +2,6 @@ const Discord = require("discord.js");
 require("discord-reply");
 const intents = new Discord.Intents()
 const client = new Discord.Client({
-    disableMentions: "all",
     ws: {
         intents: intents.ALL
     }
