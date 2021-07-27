@@ -17,5 +17,6 @@
         "notifMsg": "message to send when new vid is uploaded, placeholders {author} and {url} can be used here"
     },
     "enableDISBOARD": false,
-    "enableSudo": true
+    "enableSudo": true,
+    "bumpReminder": true
 }
