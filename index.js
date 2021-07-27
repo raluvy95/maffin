@@ -2,7 +2,6 @@ const Discord = require("discord.js");
 require("discord-reply");
 const intents = new Discord.Intents()
 const client = new Discord.Client({
-    disableMentions: "all",
     ws: {
         intents: intents.ALL
     }
@@ -64,21 +63,21 @@ client.on("ready", () => {
 });
 
 client.on("debug", info => {
-   if(info.includes("Heartbeat")) return;
-   console.log(info);
+    if (info.includes("Heartbeat")) return;
+    console.log(info);
 });
 
 client.on("guildMemberAdd", member => {
     console.log("works joined!")
-    if(member.guild.id != config.nick.guildID) return;
+    if (member.guild.id != config.nick.guildID) return;
     try {
-       const nickname = config.nick.name
-       const shortUser = member.user.username.slice(0, 36-nickname.length);
-       const newUser = config.nick.name.replace("{user}", shortUser)
-       member.setNickname(newUser)
-    } catch(e) {
-       console.log("oof")
-       console.log(e)
+        const nickname = config.nick.name
+        const shortUser = member.user.username.slice(0, 36 - nickname.length);
+        const newUser = config.nick.name.replace("{user}", shortUser)
+        member.setNickname(newUser)
+    } catch (e) {
+        console.log("oof")
+        console.log(e)
     }
     console.log("User joined!")
 })
@@ -88,49 +87,53 @@ client.on("message", message => {
     function disboardRemover() {
         setTimeout(() => {
             const lastMsg = message.channel.messages.cache
-                  .filter(m => m.author.id == "302050872383242240")
-                  .last()
-            if(!lastMsg) return;
+                .filter(m => m.author.id == "302050872383242240")
+                .last()
+            if (!lastMsg) return;
             lastMsg.delete()
         }, 1000)
     }
-    if(message.author.bot ||
-       message.channel.type == "dm") return;
-	if (stopIpGrabbers) {
-            if (ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
-                message.delete();
-                return message.reply("Don't send IP grabber links or you will be banned!");
-    	    }
-	}
-    if(message.content.toLowerCase().startsWith("ree")
-       && config.enableREE) return message.channel.send("REEEEEEEEEEE")
-    if(message.channel.id == config.chatbotChannel) return;
-    if(config.enableDISBOARD) {
-        if(message.content.toLowerCase().startsWith("!d bump")) {
+    if (message.author.bot ||
+        message.channel.type == "dm") return;
+    if (stopIpGrabbers) {
+        if (ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
+            message.delete();
+            return message.reply("Don't send IP grabber links or you will be banned!");
+        }
+    }
+    if (message.channel.id == config.chatbotChannel) return;
+    if (message.content.toLowerCase().startsWith("ree")
+        && config.enableREE) return message.channel.send("REEEEEEEEEEE")
+    if (config.enableDISBOARD) {
+        if (message.content.toLowerCase().startsWith("!d bump")) {
+            if (config.bumpReminder) {
+                message.channel.send(`Hey <@!${message.author.id}>, I will remind you to bump again in two hours!`);
+                setTimeout(() => message.channel.send(`Hey <@!${message.author.id}>, reminder to \`!d bump\``), 7200000);
+            };
             const embed = new client.Embed()
-            .setImage("https://disboard.org/images/bot-command-image-bump.png")
-            .setTitle("DISBOARD: The Public Server List")
-            .setDescription(`
-<@!${message.author.id}>,
-Bump done 👍
-Check it on DISBOARD: https://disboard.org/
-`)
-            .setURL("https://disboard.org")
-            .setColor(2406327)
+                .setImage("https://disboard.org/images/bot-command-image-bump.png")
+                .setTitle("DISBOARD: The Public Server List")
+                .setDescription(`
+                <@!${message.author.id}>,
+                Bump done 👍
+                Check it on DISBOARD: https://disboard.org/
+            `)
+                .setURL("https://disboard.org")
+                .setColor(2406327)
             message.channel.send(embed)
             disboardRemover()
-        } else if(message.content.toLowerCase().startsWith("!d")) {
+        } else if (message.content.toLowerCase().startsWith("!d")) {
             disboardRemover()
             message.channel.send("No more disboard")
         }
     }
     if (!message.content.startsWith(config.prefix)) return;
-    if(config.enableSudo) {
-        if(message.content.startsWith("sudo rm -rf")) {
+    if (config.enableSudo) {
+        if (message.content.startsWith("sudo rm -rf")) {
             return message.channel.send(`I'm going to remove the folder \`${message.content.slice(12)}\``).then(r => {
                 setTimeout(() => r.edit(`\`${message.content.slice(12)}\` has been removed!`), 3000)
             })
-        } else if(message.content.startsWith("sudo shutdown")) {
+        } else if (message.content.startsWith("sudo shutdown")) {
             return message.channel.send("Shutting down...")
         }
     }
@@ -154,7 +157,7 @@ Check it on DISBOARD: https://disboard.org/
             return message.reply(
                 `Command is on cooldown! \`${te.toFixed(1)}\` seconds left!`
             ).then(msg => {
-                msg.delete({timeout: 2000});
+                msg.delete({ timeout: 2000 });
             });
         }
     }
@@ -171,12 +174,12 @@ Check it on DISBOARD: https://disboard.org/
 
 // this is chatbot
 client.on("message", message => {
-    if(!config.enableChatbot) return;
-    if(message.author.id == client.user.id || message.author.bot) return;
-    if(message.channel.id != config.chatbotChannel) return;
-    if(message.content.startsWith("!")) return;
-    if(message.content.toLowerCase() ==
-    "uptime") {
+    if (!config.enableChatbot) return;
+    if (message.author.id == client.user.id || message.author.bot) return;
+    if (message.channel.id != config.chatbotChannel) return;
+    if (message.content.startsWith("!")) return;
+    if (message.content.toLowerCase() ==
+        "uptime") {
         let totalSeconds = (client.uptime / 1000);
         let days = Math.floor(totalSeconds / 86400);
         totalSeconds %= 86400;
@@ -190,31 +193,31 @@ client.on("message", message => {
     const now = new Date();
     message.channel.startTyping(5);
     fetch(`https://chatbot.shootdot.repl.co/clever/${encodeURIComponent(message.content)}`).then(r => r.json())
-    .then(res => {
-        const rightNow = new Date();
-        const milsec = rightNow - now
-        console.log(res)
-        message.lineReplyNoMention(
-          res.message + ` (${milsec}ms)`
-        ).catch(() => {
-            message.lineReplyNoMention("I don't know")
+        .then(res => {
+            const rightNow = new Date();
+            const milsec = rightNow - now
+            console.log(res)
+            message.lineReplyNoMention(
+                res.message + ` (${milsec}ms)`
+            ).catch(() => {
+                message.lineReplyNoMention("I don't know")
+            })
+            message.channel.stopTyping(true)
         })
-        message.channel.stopTyping(true)
-    })
-    .catch(err => {
-        message.lineReplyNoMention(`It looks like the API did an oppsie: ${err}`)
-        message.channel.stopTyping(true)
-    })
+        .catch(err => {
+            message.lineReplyNoMention(`It looks like the API did an oppsie: ${err}`)
+            message.channel.stopTyping(true)
+        })
 })
 
-setInterval(function() {
+setInterval(function () {
     parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {
         if (vidsJson.items[0].id != previousVidId[0]) {
             let notifMsg = config.ytNotifs.notifMsg;
             notifMsg = notifMsg.replace("{author}", vidsJson.items[0].author);
             notifMsg = notifMsg.replace("{url}", vidsJson.items[0].link);
             try {
-                client.channels.cache.get(config.ytNotifs.notifsChannelId).send(notifMsg, {disableMentions: "none"});
+                client.channels.cache.get(config.ytNotifs.notifsChannelId).send(notifMsg, { disableMentions: "none" });
             } catch (err) {
                 console.log("Failed to send Youtube notification message!\n" + err);
             };
