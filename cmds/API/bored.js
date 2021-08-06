@@ -10,7 +10,7 @@ module.exports = {
             .setURL(r.link)
             .setTitle(`Type: ${r.type} | Price: ${r.price}`)
             .setFooter(`Participants: ${r.participants}`)
-            message.channel.send(e)
+            message.channel.send({embeds: [e]})
         })
     }
 }

@@ -13,7 +13,7 @@ module.exports = {
             .setTitle(p.title)
             .setURL(p.postLink)
             .setFooter(`${p.ups} upvotes | Subreddit: ${p.subreddit}`)
-            message.channel.send(e)
+            message.channel.send({embeds: [e]})
         })
     }
 }

@@ -8,6 +8,6 @@ module.exports = {
        const doc = await Doc.fetch("stable")
        const got = doc.resolveEmbed(args.join(" "))
        if(!got) return message.channel.send("It looks like I cannot find that reference in Discord.js docs")
-       message.channel.send("Discord.js docs", {embed: got})
+       message.channel.send({embeds: [got]})
     }
 }

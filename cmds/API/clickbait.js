@@ -8,7 +8,7 @@ module.exports = {
            .setTitle("Clickbait Generator")
            .setColor("RANDOM")
            .setDescription(res.title)
-           message.channel.send(e)
+           message.channel.send({embeds: [e]})
        })
    }
 }

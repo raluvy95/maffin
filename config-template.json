@@ -1,4 +1,9 @@
 {
+    "slash": {
+        "enable": true,
+        "guildID": "guild ID to use slash in guild",
+        "clientID": "bot's ID to use slash"
+    },
     "token": "discord token",
     "enableChatbot": true,
     "chatbotChannel": "channel id to listen in chatbot",

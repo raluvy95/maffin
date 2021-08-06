@@ -13,6 +13,6 @@ module.exports = {
             e.addField(mod, client.cmds.filter(m => m.mod == mod)
                 .map(r => `\`${r.name}\``).join(", "))
         }
-        message.channel.send(e)
+        message.channel.send({embeds: [e]})
     }
 }

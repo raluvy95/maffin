@@ -1,11 +1,11 @@
-const Discord = require("discord.js");
-require("discord-reply");
-const intents = new Discord.Intents()
+const Discord = require("discord.js")
+const { Intents } = require("discord.js");
 const client = new Discord.Client({
-    ws: {
-        intents: intents.ALL
-    }
+    intents: [Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
 });
+const chalk = require("chalk")
 const fetch = require("node-fetch");
 const fs = require("fs");
 let Parser = require("rss-parser");
@@ -25,6 +25,7 @@ fs.open("previousVidID.json", 'r', function (err, fd) {
 
 client.cooldowns = new Discord.Collection()
 client.cmds = new Discord.Collection()
+client.slash = new Discord.Collection()
 client.Embed = Discord.MessageEmbed
 client.f = fetch;
 
@@ -46,11 +47,12 @@ for (const m of modules) {
     for (const cmds of c) {
         try {
             const command = require(`./cmds/${m}/${cmds}`)
-            client.cmds.set(command.name, command)
-            console.log(`${cmds} loaded!`)
+            if(command.slash) client.slash.set(command.name, command)
+            else client.cmds.set(command.name, command)
+            console.log(chalk.gray(`${cmds} loaded!`))
         } catch (e) {
-            console.error(`${"\033[0;31m"}It looks like the command ${cmds} did an oppsie!\n${e}`)
-            console.error("But other commands will continue loading\033[0m")
+            console.error(chalk.redBright(`It looks like the command ${cmds} did an oppsie!\n${e}`))
+            console.error(chalk.redBright("But other commands will continue loading"))
             continue
         }
     }
@@ -62,10 +64,16 @@ client.on("ready", () => {
     previousVidId = require('./previousVidId.json');
 });
 
+// spaghetti code
+
 client.on("debug", info => {
-    if (info.includes("Heartbeat")) return;
-    console.log(info);
-});
+    if(info.includes("Heartbeat")) return
+    else if(info.includes("[CONNECT]")) console.log(chalk.yellowBright(info))
+    else if(info.includes("[CONNECTED]")) console.log(chalk.greenBright(info))
+    else if(info.includes("[IDENTIFY]")) console.log(chalk.blueBright(info))
+    else if(info.includes("[READY]")) console.log(chalk.bgGreenBright.black(info))
+    else console.log(info)
+})
 
 client.on("guildMemberAdd", member => {
     console.log("works joined!")
@@ -83,7 +91,7 @@ client.on("guildMemberAdd", member => {
 })
 
 // this is command
-client.on("message", message => {
+client.on("messageCreate", message => {
     function disboardRemover() {
         setTimeout(() => {
             const lastMsg = message.channel.messages.cache
@@ -173,7 +181,7 @@ client.on("message", message => {
 })
 
 // this is chatbot
-client.on("message", message => {
+client.on("messageCreate", message => {
     if (!config.enableChatbot) return;
     if (message.author.id == client.user.id || message.author.bot) return;
     if (message.channel.id != config.chatbotChannel) return;
@@ -210,6 +218,26 @@ client.on("message", message => {
         })
 })
 
+const wait = require('util').promisify(setTimeout);
+
+client.on("interactionCreate", async i => {
+    if(i.isButton()) {
+        switch (i.customId) {
+            case 'delete':
+                await i.update({components: [], content: 'Ok.'})
+        }
+    } else if (i.isCommand()) {
+        const cmd = client.slash.get(i.commandName)
+        if(!cmd) {
+            i.reply("Looks like there's no commands avaliable in the source.\nPlease contact the developers for this")
+            console.log(chalk.bold.red("The command was registred in slash commands, but not found in the source"))
+            console.log(chalk.bold(`Command name: ${i.commandName}`))
+        } else {
+            cmd.run(i, client)
+        }
+    }
+})
+
 setInterval(function () {
     parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {
         if (vidsJson.items[0].id != previousVidId[0]) {
@@ -226,6 +254,8 @@ setInterval(function () {
                 if (err) return console.log(err);
             });
         };
+    }).catch(err => {
+        // skipped
     });
 }, config.ytNotifs.newVidCheckIntervalInMinutes * 60000);
 

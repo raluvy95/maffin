@@ -18,7 +18,7 @@ module.exports = {
             .setImage(res.img)
             .setFooter(`Number: ${res.num}`)
             .setColor("RANDOM")
-            message.channel.send(e)
+            message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`It looks like the API did an oppsie:\n${e}`))
     }
 }

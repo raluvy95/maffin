@@ -39,6 +39,6 @@ module.exports = {
             }
             e.setFooter(`${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`)
             .setURL(post.permalink)
-            message.channel.send(e)
+            message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`Oops... ${e}`))
 } }

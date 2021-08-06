@@ -11,6 +11,6 @@ Written in: JavaScript
 Users: ${client.users.cache.size}
 Creator: <@390540063609454593>`)
         .setColor("RANDOM")
-        message.channel.send(embed)
+        message.channel.send({embeds: [embed]})
     }
 }

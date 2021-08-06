@@ -9,6 +9,6 @@ module.exports = {
         .setTitle(`IP: ${info.ip}`)
         .setDescription(`City: ${info.city}\nRegion: ${info.region}\nCountry: ${info.country}\nLocation: ${info.loc}\nTimezone: ${info.timezone}\nPostal: ${info.postal}`)
         .setColor("RANDOM")
-        message.channel.send(e)
+        message.channel.send({embeds: [e]})
     }
 }
