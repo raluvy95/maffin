@@ -1,5 +1,5 @@
 const { MessageActionRow, MessageButton } = require("discord.js");
-
+const fs = require("fs")
 module.exports = {
     name: "eval",
     owner: true,
@@ -23,8 +23,40 @@ module.exports = {
             if (output.length > 1990) {
                 const ogMsg = await message.channel.send(output.slice(0, 1990), { code: "js" })
                 let ttt = (output.length - 1990) / 1990
-                message.channel.send(`Continue? There's more \`${output.length - 1990}\` more characters (${ttt.toFixed(1)} messages will send) and might be flooding.`)
+                /*
+                fs.mkdir("./cache", () => {
+                    fs.writeFileSync(`./cache/evaled-${Number(new Date().getTime() / 1000).toFixed()}.txt`, output)
+                })
+                const btn = new MessageActionRow()
+                const btns = btn.addComponents(
+                    new MessageButton()
+                    .setCustomId('accept')
+                    .setEmoji('✅')
+                    .setStyle("PRIMARY"),
+                    new MessageButton()
+                    .setCustomId('logging')
+                    .setEmoji('📜')
+                    .setStyle("SECONDARY"),
+                    new MessageButton()
+                    .setCustomId('reject')
+                    .setEmoji('❌')
+                    .setStyle("SECONDARY"),
+                    new MessageButton()
+                    .setCustomId('delete')
+                    .setEmoji('🗑️')
+                    .setStyle("SECONDARY")
+                )
+                 SUPPORT FOR BUTTONS WHEN DISCORD.JS SUPPORT ACTUALLY HELPS ME WITH THE FOLLOWING ISSUE:
+                    - DELETE THE MESSAGE AFTER THE BUTTON IS PRESSED
+                    - CONTINUE SENDING MESSAGES AFTER THE BUTTON IS PRESSED
+                    - HOLDS THE DATA WITHOUT CREATING A CACHED FILE
+                */
+                message.channel.send({ content: 
+                    `Continue? There's more \`${output.length - 1990}\` more characters (${ttt.toFixed(1)} messages will send) and might be flooding.`,
+                    // components: [btns] SUPPORT FOR BUTTONS 
+                })
                     .then(async msg => {
+                        // OLD VERSION
                         await msg.react("✅").catch(() => {})
                         await msg.react("📜").catch(() => {})
                         await msg.react("❌").catch(() => {})
@@ -80,18 +112,14 @@ module.exports = {
 
             }
         } catch (err) {
-            const msg = await message.channel.send(`\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``);
-            await msg.react('🗑️').catch(() => {})
-            const fitler = (r, u) => u.id == message.author.id == u.id
-            const collect = msg.createReactionCollector({ fitler: fitler, time: 15000 })
-            collect.on("collect", async rr => {
-                if (rr.emoji.name == '🗑') {
-                    await msg.delete().catch(() => {})
-                }
-            })
-            collect.on("end", () => {
-                msg.reactions.removeAll().catch(() => {})
-            })
+            const btn = new MessageActionRow()
+                .addComponents(
+                    new MessageButton()
+                    .setCustomId('delete')
+                    .setEmoji('🗑️')
+                    .setStyle("SECONDARY")
+                )
+            const msg = await message.channel.send({ content: `\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``, components: [btn] });
         }
     }
 }

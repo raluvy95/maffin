@@ -13,6 +13,9 @@ let parser = new Parser();
 const config = require('./config.json');
 
 let previousVidId;
+fs.rm("./cache", { recursive: true }, (err) => {
+
+})
 fs.open("previousVidID.json", 'r', function (err, fd) {
     if (err) {
         fs.writeFile("previousVidId.json", "[]", function (err) {
@@ -47,7 +50,7 @@ for (const m of modules) {
     for (const cmds of c) {
         try {
             const command = require(`./cmds/${m}/${cmds}`)
-            if(command.slash) client.slash.set(command.name, command)
+            if (command.slash) client.slash.set(command.name, command)
             else client.cmds.set(command.name, command)
             console.log(chalk.gray(`${cmds} loaded!`))
         } catch (e) {
@@ -67,11 +70,11 @@ client.on("ready", () => {
 // spaghetti code
 
 client.on("debug", info => {
-    if(info.includes("Heartbeat")) return
-    else if(info.includes("[CONNECT]")) console.log(chalk.yellowBright(info))
-    else if(info.includes("[CONNECTED]")) console.log(chalk.greenBright(info))
-    else if(info.includes("[IDENTIFY]")) console.log(chalk.blueBright(info))
-    else if(info.includes("[READY]")) console.log(chalk.bgGreenBright.black(info))
+    if (info.includes("Heartbeat")) return
+    else if (info.includes("[CONNECT]")) console.log(chalk.yellowBright(info))
+    else if (info.includes("[CONNECTED]")) console.log(chalk.greenBright(info))
+    else if (info.includes("[IDENTIFY]")) console.log(chalk.blueBright(info))
+    else if (info.includes("[READY]")) console.log(chalk.bgGreenBright.black(info))
     else console.log(info)
 })
 
@@ -221,14 +224,19 @@ client.on("messageCreate", message => {
 const wait = require('util').promisify(setTimeout);
 
 client.on("interactionCreate", async i => {
-    if(i.isButton()) {
-        switch (i.customId) {
-            case 'delete':
-                await i.update({components: [], content: 'Ok.'})
+    if (i.isButton()) {
+        try {
+            switch (i.customId) {
+                case 'delete':
+                    i.update({content: '', components: [],fetchReply: false})
+            }
+        } catch(err) {
+            msg = await i.followUp()
+            msg.reply(`${err}`).catch(() => {})
         }
     } else if (i.isCommand()) {
         const cmd = client.slash.get(i.commandName)
-        if(!cmd) {
+        if (!cmd) {
             i.reply("Looks like there's no commands avaliable in the source.\nPlease contact the developers for this")
             console.log(chalk.bold.red("The command was registred in slash commands, but not found in the source"))
             console.log(chalk.bold(`Command name: ${i.commandName}`))
