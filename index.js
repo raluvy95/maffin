@@ -227,12 +227,42 @@ client.on("interactionCreate", async i => {
     if (i.isButton()) {
         try {
             switch (i.customId) {
+                case 'accept':
+                    fs.readFile("./cache/evaled.txt", async (err, data) => {
+                        output = data.toString()
+                        let ttt = (output.length - 1990) / 1990
+                        let time = 2;
+                        while(true) {
+                            const text = output.slice(1990 * (time - 1), 1990 * time)
+                            if (!text || text.length == 0) break;
+                            await i.message.channel.send(text, { code: "js" }).catch(() => {})
+                            time++
+                        }
+                        fs.rmSync("./cache/evaled.txt")
+                    })
+                    await i.message.delete().catch(() => {})
+                    break;
+                case 'reject':
+                    i.message.delete()
+                    break
+                case 'logging':
+                    i.update({content: "Check your console output!", components: []})
+                    fs.readFile("./cache/evaled.txt", async (err, data) => {
+                        output = data.toString()
+                        console.log(output)
+                        fs.rmSync("./cache/evaled.txt")
+                    })
+                    break
                 case 'delete':
-                    i.update({content: '', components: [],fetchReply: false})
+                    i.message.delete()
+                    break
+                case 'file':
+                    i.update({content: "Here's the file!", components: []})
+                    i.message.channel.send({files: [`${__dirname}/cache/evaled.txt`]})
             }
         } catch(err) {
-            msg = await i.followUp()
-            msg.reply(`${err}`).catch(() => {})
+            await i.followUp()
+            i.message.channel.reply(`${err}`).catch(() => {})
         }
     } else if (i.isCommand()) {
         const cmd = client.slash.get(i.commandName)

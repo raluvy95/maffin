@@ -21,11 +21,10 @@ module.exports = {
             const output = clean(evaled)
             console.log(output.length)
             if (output.length > 1990) {
-                const ogMsg = await message.channel.send(output.slice(0, 1990), { code: "js" })
+                await message.channel.send(output.slice(0, 1990), { code: "js" })
                 let ttt = (output.length - 1990) / 1990
-                /*
                 fs.mkdir("./cache", () => {
-                    fs.writeFileSync(`./cache/evaled-${Number(new Date().getTime() / 1000).toFixed()}.txt`, output)
+                    fs.writeFileSync(`./cache/evaled.txt`, output)
                 })
                 const btn = new MessageActionRow()
                 const btns = btn.addComponents(
@@ -42,21 +41,22 @@ module.exports = {
                     .setEmoji('❌')
                     .setStyle("SECONDARY"),
                     new MessageButton()
-                    .setCustomId('delete')
-                    .setEmoji('🗑️')
+                    .setCustomId('file')
+                    .setEmoji('📄')
                     .setStyle("SECONDARY")
+
                 )
+                /*
                  SUPPORT FOR BUTTONS WHEN DISCORD.JS SUPPORT ACTUALLY HELPS ME WITH THE FOLLOWING ISSUE:
                     - DELETE THE MESSAGE AFTER THE BUTTON IS PRESSED
                     - CONTINUE SENDING MESSAGES AFTER THE BUTTON IS PRESSED
                     - HOLDS THE DATA WITHOUT CREATING A CACHED FILE
                 */
-                message.channel.send({ content: 
+                const msg = await message.channel.send({ content: 
                     `Continue? There's more \`${output.length - 1990}\` more characters (${ttt.toFixed(1)} messages will send) and might be flooding.`,
-                    // components: [btns] SUPPORT FOR BUTTONS 
+                    components: [btns]
                 })
-                    .then(async msg => {
-                        // OLD VERSION
+                        /* OLD VERSION
                         await msg.react("✅").catch(() => {})
                         await msg.react("📜").catch(() => {})
                         await msg.react("❌").catch(() => {})
@@ -99,7 +99,7 @@ module.exports = {
                         collect.on("end", async () => {
                             msg.reactions.removeAll().catch(() => {})
                         })
-                    })
+                        */
             } else {
                 const btn = new MessageActionRow()
                 .addComponents(
@@ -108,7 +108,7 @@ module.exports = {
                     .setEmoji('🗑️')
                     .setStyle("SECONDARY")
                 )
-                const msg = await message.channel.send({ content: "```js\n" + output + "\n```", components: [btn]})
+                await message.channel.send({ content: "```js\n" + output + "\n```", components: [btn]})
 
             }
         } catch (err) {
