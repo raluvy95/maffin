@@ -3,6 +3,9 @@ module.exports = {
     aliases: ["r"],
     cooldown: 3,
     mod: "reddit",
+    desc: "Get some posts from specific subreddit",
+    usage: "<subreddit name>",
+    example: "funny",
     run(message, args, client) {
         if(!args[0]) return message.channel.send("Give me the subreddit name")
         const s = ["hot", "new"]
@@ -37,7 +40,7 @@ module.exports = {
                 if(post.gallery_data) post.url = `https://i.redd.it/${post.gallery_data.items[0].media_id}.jpg`
                 e.setImage(post.url)
             }
-            e.setFooter(`${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`)
+            e.setFooter({text: `${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`})
             .setURL(post.permalink)
             message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`Oops... ${e}`))

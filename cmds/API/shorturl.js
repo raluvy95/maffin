@@ -3,7 +3,11 @@ module.exports = {
     aliases: ["shrturl", "short"],
     cooldown: 10,
     mod: "API",
+    desc: "Shortern URL generator.",
+    usage: "<URL>",
+    example: "https://example.com",
     run(message, args, client) {
+        if(!args[0]) return message.channel.send("Give me your long URL")
         message.channel.sendTyping()
         client.f(`https://api.shrtco.de/v2/shorten?url=${encodeURIComponent(args[0])}`).then(r => r.json())
         .then(res => {

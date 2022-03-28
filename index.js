@@ -1,9 +1,12 @@
 const Discord = require("discord.js")
 const { Intents } = require("discord.js");
 const client = new Discord.Client({
-    intents: [Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+    ]
 });
 const chalk = require("chalk")
 const fetch = require("node-fetch");
@@ -31,16 +34,7 @@ client.cmds = new Discord.Collection()
 client.slash = new Discord.Collection()
 client.Embed = Discord.MessageEmbed
 client.f = fetch;
-
-let ipGrabberDomainsArr;
-let stopIpGrabbers = false;
-if (config.ipGrabberDomainsGistId != null) {
-    stopIpGrabbers = true;
-    fetch(`https://api.github.com/gists/${config.ipGrabberDomainsGistId}`)
-        .then(r => r.json())
-        .then(json => ipGrabberDomainsArr = JSON.parse(json.files.ip_grabber_domains.content))
-        .catch(error => console.log(`Failed to get IP grabber domains array gist: ${error}`), stopIpGrabbers = false);
-}
+client.prefix = config.prefix
 
 const modules = fs.readdirSync("./cmds")
     .filter(m => !m.startsWith("_"))
@@ -62,8 +56,8 @@ for (const m of modules) {
 }
 
 client.on("ready", () => {
-    console.log("Ready!");
-    client.user.setActivity("you can talk with me in #chatbot");
+    console.log(chalk.greenBright("Ready!"));
+    client.user.setActivity(config.playingStatus);
     previousVidId = require('./previousVidId.json');
 });
 
@@ -79,7 +73,6 @@ client.on("debug", info => {
 })
 
 client.on("guildMemberAdd", member => {
-    console.log("works joined!")
     if (member.guild.id != config.nick.guildID) return;
     try {
         const nickname = config.nick.name
@@ -87,67 +80,47 @@ client.on("guildMemberAdd", member => {
         const newUser = config.nick.name.replace("{user}", shortUser)
         member.setNickname(newUser)
     } catch (e) {
-        console.log("oof")
         console.log(e)
     }
-    console.log("User joined!")
+})
+
+client.on("guildMemberUpdate", (oldM, newM) => {
+    if (oldM.nickname != newM.nickname) {
+        if (newM.nickname.toLowerCase().startsWith("catnow")) return;
+        const nick = config.nick.name
+        const shortNick = newM.nickname.slice(0, 36 - nick.length);
+        const newUser = config.nick.name.replace("{user}", shortNick)
+        newM.setNickname(newUser)
+    }
 })
 
 // this is command
 client.on("messageCreate", message => {
-    function disboardRemover() {
-        setTimeout(() => {
-            const lastMsg = message.channel.messages.cache
-                .filter(m => m.author.id == "302050872383242240")
-                .last()
-            if (!lastMsg) return;
-            lastMsg.delete()
-        }, 1000)
+    if (message.author.bot || message.channel.type == "dm") return;
+    if (message.content.toLowerCase().startsWith("ree") && config.enableREE) return message.channel.send("REEEEEEEEEEE")
+    if (message.content.toLowerCase().startsWith("!d bump") || message.interaction?.commandName == "bump") {
+        const filter = m => m.author.id == "302050872383242240"
+        message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
+            .then(c => {
+                const first = c.first()
+                if (config.bumpReminder && first.embeds[0]?.image == "https://disboard.org/images/bot-command-image-bump.png") {
+                    message.channel.send(`Hey <@!${message.author.id}>, I will remind you to bump again in two hours!`);
+                    setTimeout(() => message.channel.send(`Hey <@!${message.author.id}>, reminder to \`!d bump\` or \`/bump\`!`), 7200000);
+                }
+            })
+            .catch(() => { })
     }
-    if (message.author.bot ||
-        message.channel.type == "dm") return;
-    if (stopIpGrabbers) {
-        if (ipGrabberDomainsArr.some(ipGrabberDomain => message.content.toLowerCase().includes(ipGrabberDomain))) {
-            message.delete();
-            return message.reply("Don't send IP grabber links or you will be banned!");
-        }
-    }
-    if (message.channel.id == config.chatbotChannel) return;
-    if (message.content.toLowerCase().startsWith("ree")
-        && config.enableREE) return message.channel.send("REEEEEEEEEEE")
-    if (config.enableDISBOARD) {
-        if (message.content.toLowerCase().startsWith("!d bump")) {
-            if (config.bumpReminder) {
-                message.channel.send(`Hey <@!${message.author.id}>, I will remind you to bump again in two hours!`);
-                setTimeout(() => message.channel.send(`Hey <@!${message.author.id}>, reminder to \`!d bump\``), 7200000);
-            };
-            const embed = new client.Embed()
-                .setImage("https://disboard.org/images/bot-command-image-bump.png")
-                .setTitle("DISBOARD: The Public Server List")
-                .setDescription(`
-                <@!${message.author.id}>,
-                Bump done 👍
-                Check it on DISBOARD: https://disboard.org/
-            `)
-                .setURL("https://disboard.org")
-                .setColor(2406327)
-            message.channel.send(embed)
-            disboardRemover()
-        } else if (message.content.toLowerCase().startsWith("!d")) {
-            disboardRemover()
-            message.channel.send("No more disboard")
-        }
-    }
-    if (!message.content.startsWith(config.prefix)) return;
     if (config.enableSudo) {
+        // something like an easter egg lol
         if (message.content.startsWith("sudo rm -rf")) {
-            return message.channel.send(`I'm going to remove the folder \`${message.content.slice(12)}\``).then(r => {
+            return message.channel.send(`I'm going to remove the folder \`${message.content.slice(12)}\`...`).then(r => {
                 setTimeout(() => r.edit(`\`${message.content.slice(12)}\` has been removed!`), 3000)
             })
         } else if (message.content.startsWith("sudo shutdown")) {
             return message.channel.send("Shutting down...")
         }
     }
+    if (!message.content.startsWith(config.prefix)) return;
     const args = message.content.slice(config.prefix.length).trim().split(/ +/)
     const cmdName = args.shift().toLowerCase()
     const command = client.cmds.get(cmdName) || client.cmds.find(m => m.aliases && m.aliases.includes(cmdName))
@@ -159,7 +132,7 @@ client.on("messageCreate", message => {
     }
     const now = Date.now();
     const timestamp = client.cooldowns.get(command.name);
-    const ca = (command.cooldown || 1) * 1000;
+    const ca = (command.cooldown || 3) * 1000;
     if (timestamp && timestamp.has(message.author.id)) {
         const et = timestamp.get(message.author.id) + ca;
         if (now < et) {
@@ -183,44 +156,6 @@ client.on("messageCreate", message => {
     }
 })
 
-// this is chatbot
-client.on("messageCreate", message => {
-    if (!config.enableChatbot) return;
-    if (message.author.id == client.user.id || message.author.bot) return;
-    if (message.channel.id != config.chatbotChannel) return;
-    if (message.content.startsWith("!")) return;
-    if (message.content.toLowerCase() ==
-        "uptime") {
-        let totalSeconds = (client.uptime / 1000);
-        let days = Math.floor(totalSeconds / 86400);
-        totalSeconds %= 86400;
-        let hours = Math.floor(totalSeconds / 3600);
-        totalSeconds %= 3600;
-        let minutes = Math.floor(totalSeconds / 60);
-        let seconds = Math.floor(totalSeconds % 60);
-        const i = `${days} days, ${hours}h ${minutes}m ${seconds}s`
-        return message.channel.send(i);
-    }
-    const now = new Date();
-    message.channel.startTyping(5);
-    fetch(`https://chatbot.shootdot.repl.co/clever/${encodeURIComponent(message.content)}`).then(r => r.json())
-        .then(res => {
-            const rightNow = new Date();
-            const milsec = rightNow - now
-            console.log(res)
-            message.lineReplyNoMention(
-                res.message + ` (${milsec}ms)`
-            ).catch(() => {
-                message.lineReplyNoMention("I don't know")
-            })
-            message.channel.stopTyping(true)
-        })
-        .catch(err => {
-            message.lineReplyNoMention(`It looks like the API did an oppsie: ${err}`)
-            message.channel.stopTyping(true)
-        })
-})
-
 const wait = require('util').promisify(setTimeout);
 
 client.on("interactionCreate", async i => {
@@ -232,21 +167,21 @@ client.on("interactionCreate", async i => {
                         output = data.toString()
                         let ttt = (output.length - 1990) / 1990
                         let time = 2;
-                        while(true) {
+                        while (true) {
                             const text = output.slice(1990 * (time - 1), 1990 * time)
                             if (!text || text.length == 0) break;
-                            await i.message.channel.send(text, { code: "js" }).catch(() => {})
+                            await i.message.channel.send(text, { code: "js" }).catch(() => { })
                             time++
                         }
                         fs.rmSync("./cache/evaled.txt")
                     })
-                    await i.message.delete().catch(() => {})
+                    await i.message.delete().catch(() => { })
                     break;
                 case 'reject':
                     i.message.delete()
                     break
                 case 'logging':
-                    i.update({content: "Check your console output!", components: []})
+                    i.update({ content: "Check your console output!", components: [] })
                     fs.readFile("./cache/evaled.txt", async (err, data) => {
                         output = data.toString()
                         console.log(output)
@@ -257,25 +192,16 @@ client.on("interactionCreate", async i => {
                     i.message.delete()
                     break
                 case 'file':
-                    i.update({content: "Here's the file!", components: []})
-                    i.message.channel.send({files: [`${__dirname}/cache/evaled.txt`]})
+                    i.update({ content: "Here's the file!", components: [] })
+                    i.message.channel.send({ files: [`${__dirname}/cache/evaled.txt`] })
             }
-        } catch(err) {
+        } catch (err) {
             await i.followUp()
-            i.message.channel.reply(`${err}`).catch(() => {})
-        }
-    } else if (i.isCommand()) {
-        const cmd = client.slash.get(i.commandName)
-        if (!cmd) {
-            i.reply("Looks like there's no commands avaliable in the source.\nPlease contact the developers for this")
-            console.log(chalk.bold.red("The command was registred in slash commands, but not found in the source"))
-            console.log(chalk.bold(`Command name: ${i.commandName}`))
-        } else {
-            cmd.run(i, client)
+            i.message.channel.reply(`${err}`).catch(() => { })
         }
     }
 })
-
+/*
 setInterval(function () {
     parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {
         if (vidsJson.items[0].id != previousVidId[0]) {
@@ -296,5 +222,15 @@ setInterval(function () {
         // skipped
     });
 }, config.ytNotifs.newVidCheckIntervalInMinutes * 60000);
+*/
+
+process.on('uncaughtException', function (err) {
+    console.log("Got an uncaught exception!")
+    try {
+        fs.appendFileSync(`./logs/${Date.now()}.log`, String(err))
+    } catch {
+        console.error(err)
+    }
+});
 
 client.login(config.token)

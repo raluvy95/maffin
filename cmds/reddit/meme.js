@@ -4,6 +4,7 @@ module.exports = {
     name: "meme",
     cooldown: 3,
     mod: "reddit",
+    desc: "Get some posts from memes subreddit",
     run(message, args, client) {
         meme.getMeme(1).then(r => {
             const p = r.memes[0]
@@ -12,7 +13,7 @@ module.exports = {
             .setDescription(`[click here if not loading](${p.postLink})`)
             .setTitle(p.title)
             .setURL(p.postLink)
-            .setFooter(`${p.ups} upvotes | Subreddit: ${p.subreddit}`)
+            .setFooter({text: `${p.ups} upvotes | Subreddit: ${p.subreddit}`})
             message.channel.send({embeds: [e]})
         })
     }

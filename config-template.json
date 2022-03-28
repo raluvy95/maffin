@@ -1,20 +1,12 @@
 {
-    "slash": {
-        "enable": true,
-        "guildID": "guild ID to use slash in guild",
-        "clientID": "bot's ID to use slash"
-    },
     "token": "discord token",
-    "enableChatbot": true,
-    "chatbotChannel": "channel id to listen in chatbot",
     "owners": ["owner ID", "another owner ID (optional)", "and so on (optional)"],
     "nick": {
         "guildID": "guild id to change nickname on join",
-        "nickname": "nickname to change. use {user} to replace with username"
+        "name": "nickname to change. use {user} to replace with username"
     },
     "enableREE": true,
     "prefix": "discord bot's prefix",
-    "ipGrabberDomainsGistId": "",
     "ytNotifs": {
         "ytChannelId": "youtube channel id to send notifications for",
         "newVidCheckIntervalInMinutes": 1,
@@ -23,5 +15,6 @@
     },
     "enableDISBOARD": false,
     "enableSudo": true,
-    "bumpReminder": true
+    "bumpReminder": true,
+    "playingStatus": "hello!"
 }

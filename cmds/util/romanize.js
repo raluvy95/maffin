@@ -1,7 +1,11 @@
 module.exports = {
     name: "romanize",
     mod: "util",
+    desc: "Transform from cyrillic script to latin script.",
+    usage: "<text>",
+    example: "слава україні",
     run(message, args, client) {
+        if(!args[0]) return message.channel.send("Give me funny cyrillic words.")
         function transliterate(word){
             let answer = "";
             let a = {}

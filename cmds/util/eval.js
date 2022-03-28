@@ -19,7 +19,6 @@ module.exports = {
                 evaled = require("util").inspect(evaled);
             }
             const output = clean(evaled)
-            console.log(output.length)
             if (output.length > 1990) {
                 await message.channel.send(output.slice(0, 1990), { code: "js" })
                 let ttt = (output.length - 1990) / 1990

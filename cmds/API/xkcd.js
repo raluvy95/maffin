@@ -2,6 +2,9 @@ module.exports = {
     name: "xkcd",
     cooldown: 2,
     mod: "API",
+    desc: "Get XKCD comics",
+    usage: "[number or 'latest']",
+    example: "246",
     run(message, args, client) {
         let rand = args[0]
         if(!rand) {

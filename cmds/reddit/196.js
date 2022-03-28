@@ -5,6 +5,7 @@ module.exports = {
     aliases: ["shitty"],
     cooldown: 3,
     mod: "reddit",
+    desc: "Get some posts from r/196 subreddit",
     run(message, args, client) {
         const s = ["hot", "new"]
         const shitpost = Math.floor(Math.random() * s.length)
@@ -19,7 +20,7 @@ module.exports = {
             else { e.setImage(post.url) }
             e.setFooter(`${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`)
             .setTimestamp(post.created_utc)
-            .setURL("https://reddit.com" + post.permalink)
+            .setURL({text: "https://reddit.com" + post.permalink })
             message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`Oops... ${e}`))
     }

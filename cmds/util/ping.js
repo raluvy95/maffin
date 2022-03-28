@@ -1,9 +1,10 @@
 module.exports = {
    name: "ping",
+   aliases: ["pong"],
    mod: "util",
-   slash: true,
-   run(i, client) {
-       i.reply(Math.floor(client.ws.ping) + "ms")
+   desc: "Pong!",
+   run(message, args, client) {
+       message.channel.send(Math.floor(client.ws.ping) + "ms")
    }
 }
 

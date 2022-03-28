@@ -1,7 +1,9 @@
 module.exports = {
     name: "shitpost",
+    aliases: ["shitposting"],
     cooldown: 3,
     mod: "reddit",
+    desc: "Get some posts from r/shitposting subreddit",
     run(message, args, client) {
         const s = ["hot", "new"]
         const shitpost = Math.floor(Math.random() * s.length)
@@ -14,7 +16,7 @@ module.exports = {
             .setTitle(post.title)
             if(post.is_video) { e.setDescription(`[Video](${post.url})`) }
             else { e.setImage(post.url) }
-            e.setFooter(`${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`)
+            e.setFooter({text: `${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`})
             .setURL("https://reddit.com" + post.permalink)
             message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`Oops... ${e}`))
