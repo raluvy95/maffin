@@ -1,6 +1,6 @@
 {
   "name": "catnowbot",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "discord.js": "^13.1.0",
     "discord.js-docs": "^0.2.2",
     "jimp": "^0.16.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.2.3",
     "rss-parser": "^3.12.0",
     "youtube-notification": "^1.1.0"
   }

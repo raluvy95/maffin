@@ -1,24 +1,15 @@
 const Discord = require("discord.js")
-const { Intents } = require("discord.js");
-const client = new Discord.Client({
-    intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-    ]
-});
+const MaffinBot = require("./utils/Client.js")
+const client = new MaffinBot()
 const chalk = require("chalk")
-const fetch = require("node-fetch");
+
 const fs = require("fs");
 let Parser = require("rss-parser");
 let parser = new Parser();
 const config = require('./config.json');
 
 let previousVidId;
-fs.rm("./cache", { recursive: true }, (err) => {
-
-})
+fs.rm("./cache", { recursive: true }, (err) => { })
 fs.open("previousVidID.json", 'r', function (err, fd) {
     if (err) {
         fs.writeFile("previousVidId.json", "[]", function (err) {
@@ -29,24 +20,15 @@ fs.open("previousVidID.json", 'r', function (err, fd) {
     };
 });
 
-client.cooldowns = new Discord.Collection()
-client.cmds = new Discord.Collection()
-client.slash = new Discord.Collection()
-client.Embed = Discord.MessageEmbed
-client.f = fetch;
-client.prefix = config.prefix
-
 const modules = fs.readdirSync("./cmds")
-    .filter(m => !m.startsWith("_"))
+    .filter(m => !m.startsWith("_") && m.endsWith(".js"))
 for (const m of modules) {
     const c = fs.readdirSync(`./cmds/${m}/`)
         .filter(f => !f.startsWith("_"))
     for (const cmds of c) {
         try {
             const command = require(`./cmds/${m}/${cmds}`)
-            if (command.slash) client.slash.set(command.name, command)
-            else client.cmds.set(command.name, command)
-            console.log(chalk.gray(`${cmds} loaded!`))
+            client.cmds.set(command.name, command)
         } catch (e) {
             console.error(chalk.redBright(`It looks like the command ${cmds} did an oppsie!\n${e}`))
             console.error(chalk.redBright("But other commands will continue loading"))
@@ -96,14 +78,22 @@ client.on("guildMemberUpdate", (oldM, newM) => {
 
 // this is command
 client.on("messageCreate", message => {
+    if (config.bumpReminder && message.interaction?.commandName == "bump" && message.author.id == "302050872383242240") {
+        const au = `<@${message.interaction.user.id}>`
+        message.channel.send(`Hey ${au}, I will remind you to bump again in two hours!`)
+        setTimeout(() => message.channel.send(`Hey ${au}, reminder to \`!d bump\` or \`/bump\` again!`), 7200000)
+    }
+    if (message.channel.id == "829315052557041734" && message.author.bot) {
+        // Auto-Publish to yt announcements 
+        message.crosspost()
+    }
     if (message.author.bot || message.channel.type == "dm") return;
     if (message.content.toLowerCase().startsWith("ree") && config.enableREE) return message.channel.send("REEEEEEEEEEE")
-    if (message.content.toLowerCase().startsWith("!d bump") || message.interaction?.commandName == "bump") {
+    if (config.bumpReminder && message.content.toLowerCase().startsWith("!d bump")) {
         const filter = m => m.author.id == "302050872383242240"
         message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
             .then(c => {
-                const first = c.first()
-                if (config.bumpReminder && first.embeds[0]?.image == "https://disboard.org/images/bot-command-image-bump.png") {
+                if (config.bumpReminder && first.embeds[0]?.image?.url == "https://disboard.org/images/bot-command-image-bump.png") {
                     message.channel.send(`Hey <@!${message.author.id}>, I will remind you to bump again in two hours!`);
                     setTimeout(() => message.channel.send(`Hey <@!${message.author.id}>, reminder to \`!d bump\` or \`/bump\`!`), 7200000);
                 }
@@ -201,6 +191,41 @@ client.on("interactionCreate", async i => {
         }
     }
 })
+
+if (config.autopost.enable) {
+    setInterval(() => {
+        const subreddits = config.autopost.subredditsToFollow
+        const piii = Math.floor(Math.random() * subreddits.length)
+        client.f(`https://reddit.com/r/${subreddits[piii]}/hot.json`).then(r => r.json())
+            .then(res => {
+                res = !res[0] ? res.data : res[0].data
+                res = res.children.filter(m => !m.data.is_video && !m.data["over_18"])
+                if (res.length < 1) return;
+                const pick = Math.floor(Math.random() * res.length) + 1
+                const post = res[pick].data
+                const e = new client.Embed()
+                    .setTitle(post.title)
+                if (post.selftext) {
+                    post.selftext = post.selftext.length >= 1500 ?
+                        post.selftext.slice(0, 1500) + `... [more](${post.permalink})` :
+                        post.selftext
+                    e.setDescription(post.selftext)
+                } else {
+                    e.setDescription(`Not loading? Click [here](${post.url})`)
+                    if (post.gallery_data) post.url = `https://i.redd.it/${post.gallery_data.items[0].media_id}.jpg`
+                    e.setImage(post.url)
+                }
+                e.setURL("https://reddit.com" + post.permalink)
+                    .setColor("RANDOM")
+                if (post.is_video) { e.setDescription(`[Video](${post.url})`) }
+                else { e.setImage(post.url) }
+                client.channels.fetch("917452989038481478").then(r => {
+                    r.send({ embeds: [e] }).then(msg => msg.crosspost())
+                        .catch(() => { })
+                })
+            }).catch(() => { })
+    }, config.autopost.intervalInMinutes * 1000 * 60)
+}
 /*
 setInterval(function () {
     parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {

@@ -16,5 +16,10 @@
     "enableDISBOARD": false,
     "enableSudo": true,
     "bumpReminder": true,
-    "playingStatus": "hello!"
+    "playingStatus": "hello!",
+    "autopost": {
+        "enable": true,
+        "subredditsToFollow": ["subreddit name", "another subreddit name (optional)", "and so on (optional)"],
+        "intervalInMinutes": 120
+    }
 }
