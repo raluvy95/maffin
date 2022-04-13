@@ -21,7 +21,7 @@ fs.open("previousVidID.json", 'r', function (err, fd) {
 });
 
 const modules = fs.readdirSync("./cmds")
-    .filter(m => !m.startsWith("_") && m.endsWith(".js"))
+    .filter(m => !m.startsWith("_"))
 for (const m of modules) {
     const c = fs.readdirSync(`./cmds/${m}/`)
         .filter(f => !f.startsWith("_"))
@@ -79,27 +79,17 @@ client.on("guildMemberUpdate", (oldM, newM) => {
 // this is command
 client.on("messageCreate", message => {
     if (config.bumpReminder && message.interaction?.commandName == "bump" && message.author.id == "302050872383242240") {
-        const au = `<@${message.interaction.user.id}>`
-        message.channel.send(`Hey ${au}, I will remind you to bump again in two hours!`)
-        setTimeout(() => message.channel.send(`Hey ${au}, reminder to \`!d bump\` or \`/bump\` again!`), 7200000)
+        message.channel.send(`I will remind you to bump again in two hours!`)
+        setTimeout(() => message.channel.send("Hey <@&959024808505532436>, reminder to `/bump` again!"), 7200000)
+        return
     }
     if (message.channel.id == "829315052557041734" && message.author.bot) {
-        // Auto-Publish to yt announcements 
+        // Auto-Publish to yt announcements
         message.crosspost()
+        return
     }
     if (message.author.bot || message.channel.type == "dm") return;
     if (message.content.toLowerCase().startsWith("ree") && config.enableREE) return message.channel.send("REEEEEEEEEEE")
-    if (config.bumpReminder && message.content.toLowerCase().startsWith("!d bump")) {
-        const filter = m => m.author.id == "302050872383242240"
-        message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
-            .then(c => {
-                if (config.bumpReminder && first.embeds[0]?.image?.url == "https://disboard.org/images/bot-command-image-bump.png") {
-                    message.channel.send(`Hey <@!${message.author.id}>, I will remind you to bump again in two hours!`);
-                    setTimeout(() => message.channel.send(`Hey <@!${message.author.id}>, reminder to \`!d bump\` or \`/bump\`!`), 7200000);
-                }
-            })
-            .catch(() => { })
-    }
     if (config.enableSudo) {
         // something like an easter egg lol
         if (message.content.startsWith("sudo rm -rf")) {
@@ -220,7 +210,11 @@ if (config.autopost.enable) {
                 if (post.is_video) { e.setDescription(`[Video](${post.url})`) }
                 else { e.setImage(post.url) }
                 client.channels.fetch("917452989038481478").then(r => {
-                    r.send({ embeds: [e] }).then(msg => msg.crosspost())
+                    r.send({ embeds: [e] }).then(msg => {
+                             if(msg.channel.type == "GUILD_NEWS") {
+                                 msg.crosspost()
+                             }
+                         })
                         .catch(() => { })
                 })
             }).catch(() => { })
