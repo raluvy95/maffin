@@ -121,7 +121,7 @@ client.on("messageCreate", message => {
             return message.reply(
                 `Command is on cooldown! \`${te.toFixed(1)}\` seconds left!`
             ).then(msg => {
-                msg.delete({ timeout: 2000 });
+                setTimeout(() => msg.delete(), 2000);
             });
         }
     }
@@ -209,7 +209,7 @@ if (config.autopost.enable) {
                     .setColor("RANDOM")
                 if (post.is_video) { e.setDescription(`[Video](${post.url})`) }
                 else { e.setImage(post.url) }
-                client.channels.fetch("917452989038481478").then(r => {
+                client.channels.fetch(config.autopost.channelID).then(r => {
                     r.send({ embeds: [e] }).then(msg => {
                              if(msg.channel.type == "GUILD_NEWS") {
                                  msg.crosspost()
