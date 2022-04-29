@@ -9,6 +9,7 @@ let parser = new Parser();
 const config = require('./config.json');
 
 let previousVidId;
+let lastCommand = '';
 fs.rm("./cache", { recursive: true }, (err) => { })
 fs.open("previousVidID.json", 'r', function (err, fd) {
     if (err) {
@@ -51,7 +52,10 @@ client.on("debug", info => {
     else if (info.includes("[CONNECTED]")) console.log(chalk.greenBright(info))
     else if (info.includes("[IDENTIFY]")) console.log(chalk.blueBright(info))
     else if (info.includes("[READY]")) console.log(chalk.bgGreenBright.black(info))
-    else console.log(info)
+    else if (info.includes("[RESUME]")) console.log(chalk.greenBright(info))
+    else if (info.includes("[RESUMED]")) console.log(chalk.bgGreenBright.black(info))
+    else if (info.includes("[DESTROY]")) console.log(chalk.redBright(info))
+    else console.log(chalk.gray(info))
 })
 
 client.on("guildMemberAdd", member => {
@@ -131,6 +135,7 @@ client.on("messageCreate", message => {
     }, ca);
     try {
         command.run(message, args, client)
+	    lastCommand = command.name
     } catch (e) {
         return message.channel.send(`It looks like the command did an oppsie\n${e}`)
     }
@@ -245,10 +250,16 @@ setInterval(function () {
 
 process.on('uncaughtException', function (err) {
     console.log("Got an uncaught exception!")
+    const msg = `Command: ${lastCommand}\n${err}`
     try {
-        fs.appendFileSync(`./logs/${Date.now()}.log`, String(err))
+	fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
     } catch {
-        console.error(err)
+	try {
+            fs.mkdirSync("./logs")
+            fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
+	} catch {
+	    console.error(err)
+        }
     }
 });
 

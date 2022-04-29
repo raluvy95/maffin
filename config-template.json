@@ -1,5 +1,5 @@
 {
-    "token": "discord token",
+    "token": "discord bot token",
     "owners": ["owner ID", "another owner ID (optional)", "and so on (optional)"],
     "nick": {
         "guildID": "guild id to change nickname on join",
