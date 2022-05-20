@@ -22,5 +22,6 @@
         "subredditsToFollow": ["subreddit name", "another subreddit name (optional)", "and so on (optional)"],
         "intervalInMinutes": 120,
         "channelID": "channel ID"
-    }
+    },
+    "isCatNowServer": false
 }

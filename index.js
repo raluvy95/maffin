@@ -72,7 +72,7 @@ client.on("guildMemberAdd", member => {
 
 client.on("guildMemberUpdate", (oldM, newM) => {
     if (oldM.nickname != newM.nickname) {
-        if (newM.nickname.toLowerCase().startsWith("catnow")) return;
+        if (newM?.nickname?.toLowerCase()?.startsWith("catnow")) return;
         const nick = config.nick.name
         const shortNick = newM.nickname.slice(0, 36 - nick.length);
         const newUser = config.nick.name.replace("{user}", shortNick)
@@ -93,7 +93,7 @@ client.on("messageCreate", message => {
         return
     }
     if (message.author.bot || message.channel.type == "dm") return;
-    if (message.content.toLowerCase().startsWith("ree") && config.enableREE) return message.channel.send("REEEEEEEEEEE")
+    if (message?.content?.toLowerCase().startsWith("ree") && config.enableREE) return message.channel.send("REEEEEEEEEEE")
     if (config.enableSudo) {
         // something like an easter egg lol
         if (message.content.startsWith("sudo rm -rf")) {
@@ -106,7 +106,7 @@ client.on("messageCreate", message => {
     }
     if (!message.content.startsWith(config.prefix)) return;
     const args = message.content.slice(config.prefix.length).trim().split(/ +/)
-    const cmdName = args.shift().toLowerCase()
+    const cmdName = args?.shift()?.toLowerCase()
     const command = client.cmds.get(cmdName) || client.cmds.find(m => m.aliases && m.aliases.includes(cmdName))
     if (!command) return;
     const owners = config.owners
@@ -135,7 +135,7 @@ client.on("messageCreate", message => {
     }, ca);
     try {
         command.run(message, args, client)
-	    lastCommand = command.name
+        lastCommand = command.name
     } catch (e) {
         return message.channel.send(`It looks like the command did an oppsie\n${e}`)
     }
@@ -216,14 +216,29 @@ if (config.autopost.enable) {
                 else { e.setImage(post.url) }
                 client.channels.fetch(config.autopost.channelID).then(r => {
                     r.send({ embeds: [e] }).then(msg => {
-                             if(msg.channel.type == "GUILD_NEWS") {
-                                 msg.crosspost()
-                             }
-                         })
+                        if (msg.channel.type == "GUILD_NEWS") {
+                            msg.crosspost()
+                        }
+                    })
                         .catch(() => { })
                 })
             }).catch(() => { })
     }, config.autopost.intervalInMinutes * 1000 * 60)
+}
+
+if(config.isCatNowServer) {
+    // CatNowServer specific features
+
+    // change the emoji every 2 hours
+    setInterval(async () => {
+        const channel = client.channels.cache.get("969551988058628116") || await client.channels.fetch("969551988058628116")
+        if(!channel) return;
+        const balkanEmojis = ["🇦🇱", "🇧🇦", "🇧🇬", "🇬🇷", "🇭🇷",
+                              "🇮🇹", "🇲🇩", "🇲🇪", "🇲🇰", "🇷🇴"
+                              "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"]
+        const balkanEmoji = balkanEmojis[Math.floor(Math.random() * balkanEmojis.length)]
+        channel.setName(`•${balkanEmoji}2balkan4you`)
+    }, 7200000)
 }
 /*
 setInterval(function () {
@@ -252,13 +267,13 @@ process.on('uncaughtException', function (err) {
     console.log("Got an uncaught exception!")
     const msg = `Command: ${lastCommand}\n${err}`
     try {
-	fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
+        fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
     } catch {
-	try {
+        try {
             fs.mkdirSync("./logs")
             fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
-	} catch {
-	    console.error(err)
+        } catch {
+            console.error(err)
         }
     }
 });

@@ -18,7 +18,7 @@ module.exports = {
             else { e.setImage(post.url) }
             e.setFooter(`${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`)
             .setTimestamp(post.created_utc)
-            .setURL({text: "https://reddit.com" + post.permalink })
+            .setURL("https://reddit.com" + post.permalink)
             message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`Oops... ${e}`))
     }

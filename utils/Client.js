@@ -10,8 +10,13 @@ class MaffinBot extends Discord.Client {
                 Intents.FLAGS.GUILD_MEMBERS,
                 Intents.FLAGS.GUILD_MESSAGES,
                 Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-            ]
-        })
+            ],
+            ws: {
+	        properties: {
+		    $browser: "Discord iOS"
+		}
+	    }
+	})
         this.cooldowns = new Discord.Collection()
         this.cmds = new Discord.Collection()
         this.Embed = Discord.MessageEmbed
