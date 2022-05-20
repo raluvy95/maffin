@@ -234,7 +234,7 @@ if(config.isCatNowServer) {
         const channel = client.channels.cache.get("969551988058628116") || await client.channels.fetch("969551988058628116")
         if(!channel) return;
         const balkanEmojis = ["🇦🇱", "🇧🇦", "🇧🇬", "🇬🇷", "🇭🇷",
-                              "🇮🇹", "🇲🇩", "🇲🇪", "🇲🇰", "🇷🇴"
+                              "🇮🇹", "🇲🇩", "🇲🇪", "🇲🇰", "🇷🇴",
                               "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"]
         const balkanEmoji = balkanEmojis[Math.floor(Math.random() * balkanEmojis.length)]
         channel.setName(`•${balkanEmoji}2balkan4you`)
