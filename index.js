@@ -87,6 +87,11 @@ client.on("messageCreate", message => {
         setTimeout(() => message.channel.send("Hey <@&959024808505532436>, reminder to `/bump` again!"), 7200000)
         return
     }
+    if(config.selfping?.enable) {
+        if(message.mentions.users.first().id == client.user.id) {
+            message.reply(config.selfping.message)
+        }
+    }
     if (message.channel.id == "829315052557041734" && message.author.bot) {
         // Auto-Publish to yt announcements
         message.crosspost()
@@ -104,8 +109,9 @@ client.on("messageCreate", message => {
             return message.channel.send("Shutting down...")
         }
     }
-    if (!message.content.startsWith(config.prefix)) return;
-    const args = message.content.slice(config.prefix.length).trim().split(/ +/)
+    if(!config.prefixes.some(m => message.content.toLowerCase().startsWith(m), message.content.toLowerCase())) return;
+    client.prefix = config.prefixes.find(m => message.content.toLowerCase().startsWith(m), message.content.toLowerCase())
+    const args = message.content.slice(client.prefix.length).trim().split(/ +/)
     const cmdName = args?.shift()?.toLowerCase()
     const command = client.cmds.get(cmdName) || client.cmds.find(m => m.aliases && m.aliases.includes(cmdName))
     if (!command) return;
@@ -238,7 +244,7 @@ if(config.isCatNowServer) {
                               "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"]
         const balkanEmoji = balkanEmojis[Math.floor(Math.random() * balkanEmojis.length)]
         channel.setName(`•${balkanEmoji}2balkan4you`)
-    }, 7200000)
+    }, 18000000)
 }
 /*
 setInterval(function () {

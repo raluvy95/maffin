@@ -6,7 +6,7 @@
         "name": "nickname to change. use {user} to replace with username"
     },
     "enableREE": true,
-    "prefix": "discord bot's prefix",
+    "prefixes": ["discord bot's prefix", "another prefix (optional)", "and so on (optional)"],
     "ytNotifs": {
         "ytChannelId": "youtube channel id to send notifications for",
         "newVidCheckIntervalInMinutes": 1,
@@ -23,5 +23,9 @@
         "intervalInMinutes": 120,
         "channelID": "channel ID"
     },
-    "isCatNowServer": false
+    "isCatNowServer": false,
+    "selfping": {
+        "enable": true,
+        "message": "Message to someone who pings discord bot."
+    }
 }

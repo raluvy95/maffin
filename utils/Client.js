@@ -20,7 +20,7 @@ class MaffinBot extends Discord.Client {
         this.cooldowns = new Discord.Collection()
         this.cmds = new Discord.Collection()
         this.Embed = Discord.MessageEmbed
-        this.prefix = config.prefix
+        this.prefix = null
     }
     
     /**
