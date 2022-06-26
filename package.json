@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "watch": "while sleep 60; do git pull; done"
   },
   "author": "raluvy95",
   "license": "GPL",
