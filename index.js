@@ -4,22 +4,10 @@ const client = new MaffinBot()
 const chalk = require("chalk")
 
 const fs = require("fs");
-let Parser = require("rss-parser");
-let parser = new Parser();
 const config = require('./config.json');
 
-let previousVidId;
 let lastCommand = '';
 fs.rm("./cache", { recursive: true }, (err) => { })
-fs.open("previousVidID.json", 'r', function (err, fd) {
-    if (err) {
-        fs.writeFile("previousVidId.json", "[]", function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
-    };
-});
 
 const modules = fs.readdirSync("./cmds")
     .filter(m => !m.startsWith("_"))
@@ -41,7 +29,6 @@ for (const m of modules) {
 client.on("ready", () => {
     console.log(chalk.greenBright("Ready!"));
     client.user.setActivity(config.playingStatus);
-    previousVidId = require('./previousVidId.json');
 });
 
 // spaghetti code
@@ -248,28 +235,6 @@ if (config.isCatNowServer) {
         channel.setName(`•${balkanEmoji}2balkan4you`)
     }, 18000000)
 }
-/*
-setInterval(function () {
-    parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${config.ytNotifs.ytChannelId}`).then(vidsJson => {
-        if (vidsJson.items[0].id != previousVidId[0]) {
-            let notifMsg = config.ytNotifs.notifMsg;
-            notifMsg = notifMsg.replace("{author}", vidsJson.items[0].author);
-            notifMsg = notifMsg.replace("{url}", vidsJson.items[0].link);
-            try {
-                client.channels.cache.get(config.ytNotifs.notifsChannelId).send(notifMsg, { disableMentions: "none" });
-            } catch (err) {
-                console.log("Failed to send Youtube notification message!\n" + err);
-            };
-            previousVidId[0] = vidsJson.items[0].id;
-            fs.writeFile('./previousVidId.json', JSON.stringify(previousVidId), 'utf8', function (err) {
-                if (err) return console.log(err);
-            });
-        };
-    }).catch(err => {
-        // skipped
-    });
-}, config.ytNotifs.newVidCheckIntervalInMinutes * 60000);
-*/
 
 process.on('uncaughtException', function (err) {
     console.log("Got an uncaught exception!")

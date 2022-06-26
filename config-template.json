@@ -7,12 +7,6 @@
     },
     "enableREE": true,
     "prefixes": ["discord bot's prefix", "another prefix (optional)", "and so on (optional)"],
-    "ytNotifs": {
-        "ytChannelId": "youtube channel id to send notifications for",
-        "newVidCheckIntervalInMinutes": 1,
-        "notifsChannelId": "id of channel to send notifications to",
-        "notifMsg": "message to send when new vid is uploaded, placeholders {author} and {url} can be used here"
-    },
     "enableDISBOARD": false,
     "enableSudo": true,
     "bumpReminder": true,
