@@ -77,6 +77,8 @@ client.on("guildMemberUpdate", (oldM, newM) => {
         const shortNick = newM.nickname.slice(0, 36 - nick.length);
         const newUser = config.nick.name.replace("{user}", shortNick)
         newM.setNickname(newUser)
+    } else if (oldM.pending != newM.pending && config.isCatNowServer) {
+        newM.roles.add("829310253832470579")
     }
 })
 
@@ -84,11 +86,11 @@ client.on("guildMemberUpdate", (oldM, newM) => {
 client.on("messageCreate", message => {
     if (config.bumpReminder && message.interaction?.commandName == "bump" && message.author.id == "302050872383242240") {
         message.channel.send(`I will remind you to bump again in two hours!`)
-        setTimeout(() => message.channel.send("Hey <@&959024808505532436>, reminder to `/bump` again!"), 7200000)
+        setTimeout(() => message.channel.send({ content: "Hey <@&959024808505532436>, reminder to `/bump` again!", allowedMentions: { roles: ["959024808505532436"] } }), 7200000)
         return
     }
-    if(config.selfping?.enable) {
-        if(message.mentions.users.first().id == client.user.id) {
+    if (config.selfping?.enable) {
+        if (message.mentions.users?.first()?.id == client.user.id) {
             message.reply(config.selfping.message)
         }
     }
@@ -109,7 +111,7 @@ client.on("messageCreate", message => {
             return message.channel.send("Shutting down...")
         }
     }
-    if(!config.prefixes.some(m => message.content.toLowerCase().startsWith(m), message.content.toLowerCase())) return;
+    if (!config.prefixes.some(m => message.content.toLowerCase().startsWith(m), message.content.toLowerCase())) return;
     client.prefix = config.prefixes.find(m => message.content.toLowerCase().startsWith(m), message.content.toLowerCase())
     const args = message.content.slice(client.prefix.length).trim().split(/ +/)
     const cmdName = args?.shift()?.toLowerCase()
@@ -232,16 +234,16 @@ if (config.autopost.enable) {
     }, config.autopost.intervalInMinutes * 1000 * 60)
 }
 
-if(config.isCatNowServer) {
+if (config.isCatNowServer) {
     // CatNowServer specific features
 
     // change the emoji every 2 hours
     setInterval(async () => {
         const channel = client.channels.cache.get("969551988058628116") || await client.channels.fetch("969551988058628116")
-        if(!channel) return;
+        if (!channel) return;
         const balkanEmojis = ["🇦🇱", "🇧🇦", "🇧🇬", "🇬🇷", "🇭🇷",
-                              "🇮🇹", "🇲🇩", "🇲🇪", "🇲🇰", "🇷🇴",
-                              "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"]
+            "🇮🇹", "🇲🇩", "🇲🇪", "🇲🇰", "🇷🇴",
+            "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"]
         const balkanEmoji = balkanEmojis[Math.floor(Math.random() * balkanEmojis.length)]
         channel.setName(`•${balkanEmoji}2balkan4you`)
     }, 18000000)

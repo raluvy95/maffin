@@ -15,7 +15,8 @@ class MaffinBot extends Discord.Client {
 	        properties: {
 		    $browser: "Discord iOS"
 		}
-	    }
+	    },
+	    allowedMentions: {parse: ["users"]}
 	})
         this.cooldowns = new Discord.Collection()
         this.cmds = new Discord.Collection()
