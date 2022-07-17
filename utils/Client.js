@@ -38,10 +38,10 @@ class MaffinBot extends Discord.Client {
         if (!member) {
             const r = await message.guild.members.fetch()
             member = r.find(m =>
-                m.user.username.toLowerCase() == args.join(" ").toLowerCase() ||
-                m.nickname.toLowerCase() == args.join(" ").toLowerCase() ||
-                m.user.id == args[0] ||
-                m.user.tag.toLowerCase() == args.join(" ").toLowerCase()
+                m.user?.username?.toLowerCase() == args.join(" ").toLowerCase() ||
+                m.nickname?.toLowerCase() == args.join(" ").toLowerCase() ||
+                m.user?.id == args[0] ||
+                m.user?.tag?.toLowerCase() == args.join(" ").toLowerCase()
             )
         }
         return member

@@ -28,8 +28,8 @@ module.exports = {
         .setColor("#67ffff")
         const modules = fs.readdirSync("./cmds")
         for(const mod of modules) {
-            e.addField(mod, client.cmds.filter(m => m.mod == mod)
-                .map(r => `\`${r.name}\``).join(", "))
+            e.addField(mod.toUpperCase(), client.cmds.filter(m => m.mod == mod)
+                .map(r => `\`${r.name}\``).join(", ") || 'No commands found in this module')
         }
         message.channel.send({embeds: [e]})
     }

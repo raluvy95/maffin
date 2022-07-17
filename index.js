@@ -109,6 +109,10 @@ client.on("messageCreate", message => {
     if (!client.cooldowns.has(command.name)) {
         client.cooldowns.set(command.name, new Discord.Collection());
     }
+    const mods = config.modRole
+    if(command.isMod && !(message.member.permissions.has("ADMINISTRATOR") || message.member.roles.cache.hasAny(mods))) {
+        return message.channel.send("You don't have permission to moderate!")
+    }
     const now = Date.now();
     const timestamp = client.cooldowns.get(command.name);
     const ca = (command.cooldown || 3) * 1000;

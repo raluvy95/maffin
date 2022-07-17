@@ -21,5 +21,6 @@
     "selfping": {
         "enable": true,
         "message": "Message to someone who pings discord bot."
-    }
+    },
+    "modRole": ["role ID", "another role ID (optional)", "you don't necessary put role that has Administrator permission"]
 }
