@@ -1,9 +1,10 @@
-const { MessageActionRow, MessageButton } = require("discord.js");
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
+const { ActionRowBuilder } = require("discord.js/src");
 const fs = require("fs")
 module.exports = {
     name: "eval",
     owner: true,
-    run: async (message, args, client) => {
+    run: async (message, args) => {
         const clean = text => {
             if (typeof text === "string")
                 return text
@@ -25,24 +26,24 @@ module.exports = {
                 fs.mkdir("./cache", () => {
                     fs.writeFileSync(`./cache/evaled.txt`, output)
                 })
-                const btn = new MessageActionRow()
+                const btn = new ActionRowBuilder()
                 const btns = btn.addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                     .setCustomId('accept')
                     .setEmoji('✅')
-                    .setStyle("PRIMARY"),
-                    new MessageButton()
+                    .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
                     .setCustomId('logging')
                     .setEmoji('📜')
-                    .setStyle("SECONDARY"),
-                    new MessageButton()
+                    .setStyle(ButtonStyle.Secondary),
+                    new ButtonBuilder()
                     .setCustomId('reject')
                     .setEmoji('❌')
-                    .setStyle("SECONDARY"),
-                    new MessageButton()
+                    .setStyle(ButtonStyle.Secondary),
+                    new ButtonBuilder()
                     .setCustomId('file')
                     .setEmoji('📄')
-                    .setStyle("SECONDARY")
+                    .setStyle(ButtonStyle.Secondary)
 
                 )
                 /*
@@ -51,7 +52,7 @@ module.exports = {
                     - CONTINUE SENDING MESSAGES AFTER THE BUTTON IS PRESSED
                     - HOLDS THE DATA WITHOUT CREATING A CACHED FILE
                 */
-                const msg = await message.channel.send({ content: 
+                await message.channel.send({ content: 
                     `Continue? There's more \`${output.length - 1990}\` more characters (${ttt.toFixed(1)} messages will send) and might be flooding.`,
                     components: [btns]
                 })
@@ -100,25 +101,25 @@ module.exports = {
                         })
                         */
             } else {
-                const btn = new MessageActionRow()
+                const btn = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                     .setCustomId('delete')
                     .setEmoji('🗑️')
-                    .setStyle("SECONDARY")
+                    .setStyle(ButtonStyle.Secondary),
                 )
                 await message.channel.send({ content: "```js\n" + output + "\n```", components: [btn]})
 
             }
         } catch (err) {
-            const btn = new MessageActionRow()
+            const btn = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                     .setCustomId('delete')
                     .setEmoji('🗑️')
-                    .setStyle("SECONDARY")
+                    .setStyle(ButtonStyle.Secondary)
                 )
-            const msg = await message.channel.send({ content: `\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``, components: [btn] });
+            await message.channel.send({ content: `\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``, components: [btn] });
         }
     }
 }

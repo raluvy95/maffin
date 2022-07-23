@@ -3,7 +3,7 @@ module.exports = {
     mod: "fun",
     desc: "... what?",
     aliases: ["cum", "porn", "sperm", "anal", "fuck"],
-    run(message, args, client) {
+    run(message) {
         message.channel.send("🤨📸");
     }
 }

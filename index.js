@@ -1,3 +1,5 @@
+Error.stackTraceLimit = Infinity;
+
 const Discord = require("discord.js")
 const MaffinBot = require("./utils/Client.js")
 const client = new MaffinBot()
@@ -110,7 +112,7 @@ client.on("messageCreate", message => {
         client.cooldowns.set(command.name, new Discord.Collection());
     }
     const mods = config.modRole
-    if(command.isMod && !(message.member.permissions.has("ADMINISTRATOR") || message.member.roles.cache.hasAny(mods))) {
+    if (command.isMod && !(message.member.permissions.has("ADMINISTRATOR") || message.member.roles.cache.hasAny(mods))) {
         return message.channel.send("You don't have permission to moderate!")
     }
     const now = Date.now();
@@ -132,12 +134,13 @@ client.on("messageCreate", message => {
     setTimeout(() => {
         timestamp.delete(message.author.id);
     }, ca);
-    try {
-        command.run(message, args, client)
-        lastCommand = command.name
-    } catch (e) {
-        return message.channel.send(`It looks like the command did an oppsie\n${e}`)
-    }
+    // try {
+    command.run(message, args, client)
+    lastCommand = command.name
+    // } catch (e) {
+    //     writeErrorToFile(e)
+    //     return message.channel.send(`It looks like the command did an oppsie! Please contact the devs about it!`)
+    // }
 })
 
 const wait = require('util').promisify(setTimeout);
@@ -232,17 +235,23 @@ if (config.isCatNowServer) {
     setInterval(async () => {
         const channel = client.channels.cache.get("969551988058628116") || await client.channels.fetch("969551988058628116")
         if (!channel) return;
-        const balkanEmojis = ["🇦🇱", "🇧🇦", "🇧🇬", "🇬🇷", "🇭🇷",
+        const balkanEmojis = [
+            "🇦🇱", "🇧🇦", "🇧🇬", "🇬🇷", "🇭🇷",
             "🇮🇹", "🇲🇩", "🇲🇪", "🇲🇰", "🇷🇴",
-            "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"]
+            "🇷🇸", "🇸🇮", "🇽🇰", "🇹🇷"
+        ]
         const balkanEmoji = balkanEmojis[Math.floor(Math.random() * balkanEmojis.length)]
         channel.setName(`•${balkanEmoji}2balkan4you`)
     }, 18000000)
 }
 
-process.on('uncaughtException', function (err) {
-    console.log("Got an uncaught exception!")
-    const msg = `Command: ${lastCommand}\n${err}`
+// process.on('uncaughtException', function (err) {
+//     console.log("Got an uncaught exception!")
+//     writeErrorToFile(err)
+// });
+
+function writeErrorToFile(error) {
+    const msg = `Command: ${lastCommand}\nError name: ${error.name}\n${error.stack}`
     try {
         fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
     } catch {
@@ -250,9 +259,9 @@ process.on('uncaughtException', function (err) {
             fs.mkdirSync("./logs")
             fs.appendFileSync(`./logs/${Date.now()}.log`, msg)
         } catch {
-            console.error(err)
+            console.error(error)
         }
     }
-});
+}
 
 client.login(config.token)

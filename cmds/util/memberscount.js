@@ -3,7 +3,7 @@ module.exports = {
 	aliases: ["members", "memberscount"],
 	mod: "util",
 	desc: "Count current members in this server (including details)",
-	run: async (message, args, client) => {
+	run: async (message, _, client) => {
 		const accurateCount = message.guild.memberCount
 		let cached = message.guild.members.cache
 		if (accurateCount != cached.size) {

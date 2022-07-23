@@ -1,29 +1,36 @@
-const Discord = require("discord.js")
-const { Intents } = require("discord.js");
+const { GatewayIntentBits, Collection, Client } = require("discord.js");
 const config = require('../config.json');
+const MaffinEmbed = require("./Embed");
 
-class MaffinBot extends Discord.Client {
+class MaffinBot extends Client {
     constructor() {
         super({
             intents: [
-                Intents.FLAGS.GUILDS,
-                Intents.FLAGS.GUILD_MEMBERS,
-                Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildMessageTyping,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
+                GatewayIntentBits.Guilds,
+                // fuck you Discord for making MessageContent a "privacy nightmare for users"
+                // I won't plan to use your shitty slash command that will actually
+                // hurt developers and users too. LISTEN TO YOUR FEEDBACK PLEASE
+
+                // let developers do whatever shit with their bot
+                GatewayIntentBits.MessageContent
             ],
             ws: {
-	        properties: {
-		    $browser: "Discord iOS"
-		}
-	    },
-	    allowedMentions: {parse: ["users"]}
-	})
-        this.cooldowns = new Discord.Collection()
-        this.cmds = new Discord.Collection()
-        this.Embed = Discord.MessageEmbed
+                properties: {
+                    $browser: "Discord iOS"
+                }
+            },
+            allowedMentions: { parse: ["users"] }
+        })
+        this.cooldowns = new Collection()
+        this.cmds = new Collection()
+        this.Embed = MaffinEmbed
         this.prefix = null
     }
-    
+
     /**
      * Get an HTTP request.
      * @param  {...any} args  
@@ -51,7 +58,7 @@ class MaffinBot extends Discord.Client {
         const fromMsg = message.channel.messages.cache.filter(m => m.attachments.size > 0).last()?.attachments?.first()?.attachment
         const fromEmb = message.channel.messages.cache.filter(m => m.embeds[0]).last()?.embeds[0]?.image?.url
         const fromOwnMsg = message.attachments?.first()?.attachment
-        const fromMention = message.mentions.users.first()?.avatarURL() || await this.getMember(message, args).user?.avatarURL()
+        const fromMention = message.mentions.users.first()?.avatarURL({ forceStatic: true }) || await this.getMember(message, args).user?.avatarURL({ forceStatic: true })
         console.log(fromMention)
         return fromMention || fromOwnMsg || fromMsg || fromEmb
     }

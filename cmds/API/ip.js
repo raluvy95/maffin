@@ -15,7 +15,7 @@ module.exports = {
         const e = new client.Embed()
         .setTitle(`IP: ${info.ip}`)
         .setDescription(`City: ${info.city}\nRegion: ${info.region}\nCountry: ${info.country}\nLocation: ${info.loc}\nTimezone: ${info.timezone}\nPostal: ${info.postal}`)
-        .setColor("RANDOM")
+        .setColor(0xc45a23)
         message.channel.send({embeds: [e]})
     }
 }

@@ -3,7 +3,7 @@ module.exports = {
     aliases: ["up"],
     mod: "util",
     desc: "Show how long the bot has been up.",
-    run(message, args, client) {
+    run(message, _, client) {
         function secondsToDhms(seconds) {
             seconds = Number(seconds)
             const d = Math.floor(seconds / (3600*24));

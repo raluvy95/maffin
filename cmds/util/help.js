@@ -15,9 +15,8 @@ module.exports = {
             } else {
                 const em = new client.Embed()
                 .setTitle(`Help command - ${cmd.name}`)
-                .setColor("RANDOM")
                 .setDescription(cmd.desc || "No description found")
-                .addField("Aliases", !cmd.aliases ? "No aliases." : cmd.aliases.map(m => `\`${m}\``).join(", "))
+                .addField("Aliases", !cmd.aliases || cmd.aliases.length < 1 ? "No aliases." : cmd.aliases.map(m => `\`${m}\``).join(", "))
                 .addField("Usage", `${client.prefix}${cmd.name} ${!cmd.usage ? '' : cmd.usage}`)
                 .addField("Example", `${client.prefix}${cmd.name} ${!cmd.example ? '' : cmd.example}`)
                 return message.channel.send({embeds: [em]})
@@ -25,7 +24,7 @@ module.exports = {
         }
         const e = new client.Embed()
         .setTitle("Help command")
-        .setColor("#67ffff")
+        .setColor(0x67ffff)
         const modules = fs.readdirSync("./cmds")
         for(const mod of modules) {
             e.addField(mod.toUpperCase(), client.cmds.filter(m => m.mod == mod)

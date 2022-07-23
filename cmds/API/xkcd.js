@@ -19,8 +19,8 @@ module.exports = {
             .setTitle(res.safe_title)
             .setDescription(res.alt)
             .setImage(res.img)
-            .setFooter(`Number: ${res.num}`)
-            .setColor("RANDOM")
+            .setFooter({text: `Number: ${res.num}`})
+            .setColor(0xffffff)
             message.channel.send({embeds: [e]})
         }).catch(e => message.channel.send(`It looks like the API did an oppsie:\n${e}`))
     }

@@ -16,7 +16,7 @@ module.exports = {
             .setTitle(post.title)
             if(post.is_video) { e.setDescription(`[Video](${post.url})`) }
             else { e.setImage(post.url) }
-            e.setFooter(`${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`)
+            e.setFooter({text: `${post.ups} upvotes | Subreddit: ${post.subreddit_name_prefixed}`})
             .setTimestamp(post.created_utc)
             .setURL("https://reddit.com" + post.permalink)
             message.channel.send({embeds: [e]})

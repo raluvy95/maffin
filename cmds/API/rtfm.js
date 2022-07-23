@@ -6,7 +6,7 @@ module.exports = {
     desc: "Get it from Discord.js documents.\n**USE THIS IF YOU'RE DISCORD.JS USER**",
     usage: "<query>",
     example: "MessageEmbed",
-    run: async (message, args, client) => {
+    run: async (message, args) => {
        if(!args[0]) return message.channel.send("What do you want me to look up in Discord.js docs?")
        try{
            const doc = await Doc.fetch("stable")

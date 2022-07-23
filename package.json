@@ -1,6 +1,6 @@
 {
   "name": "catnowbot",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,12 +10,11 @@
   "author": "raluvy95",
   "license": "GPL",
   "dependencies": {
-    "@discordjs/rest": "^0.1.0-canary.0",
+    "@discordjs/rest": "^1.0.0",
     "@therealraluvy/memeinstall": "^1.3.0",
     "chalk": "^4.1.2",
-    "discord.js": "^13.1.0",
-    "discord.js-docs": "^0.2.2",
-    "jimp": "^0.16.1",
-    "node-fetch": "^3.2.3"
+    "discord.js": "^14.0.3",
+    "discord.js-docs": "^0.3.0",
+    "node-fetch": "^3.2.9"
   }
 }
