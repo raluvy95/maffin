@@ -1,3 +1,5 @@
+**This repository is deprecated in favour of [jolly](https://github.com/raluvy95/jolly)**
+
 <img align="right" width="100" height="100" src="./icon.png"><br>
 # CatNowBot - codename "Maffin"
 A basic discord bot with necessary features for my server.<br>
